@@ -1,9 +1,9 @@
 function onParadeStart()
-    
---0Session->Animation->OpenGL animation export->
---300×300
---#FFFFFF
 
+    --0Session->Animation->OpenGL animation export->
+    --300×300
+    --#FFFFFF
+    
     sf=ldc.subfile() -- get the reference to the ldraw file which contains the parts list
 
     pieceCounter = 1 -- counter move through the List of pieces
@@ -34,62 +34,69 @@ function onParadeStart()
         sf:getRef(i):setPos(unviewPosition)
     end
 
-    sf:getRef(1): setPos(viewPosition) -- put first piece in-place
+    sf:getRef(1):setPos(viewPosition) -- put first piece in-place
 
-end -- end function onParadestart ()
-    
+end -- end function onParadestart()
+        
 function onParadeFrame()
 
-frameCounter = frameCounter + 1 -- counter for tracking purposes below
-cam = cam.view():getCamera()
+    frameCounter = frameCounter + 1 -- counter for tracking purposes below
+    cam = cam.view():getCamera()
 
-if cameraLoopCounter == 1 then -- rotate the camera 360 degrees around the piece on the first axis
-    cam:setThirdPerson(camPos, camDist, cameraAngleIncrement*frameCounter, 0, 0)
-    cam:apply(0)
-    if frameCounter > moffs then -- if finished a complete rotation of the camera, go on to the next step
-        frameCounter = 6
-        cameraLoopCounter = 2
-    end
-else
-    if cameraLoopCounter == 2 then -- rotate the camera 90 degrees around the piece on the second axis
-        cam:setThirdPerson(camPos, camDist, B, cameraAngleIncrement*frameCounter, 0)
-        if frameCounter == myFPS then -- Finished complete rotation of the camera, go on to the next step
-            frameCounter = A
-            cameraLoopCounter = 3
+    if cameraLoopCounter == 1 then -- rotate the camera 360 degrees around the piece on the first axis
+        cam:setThirdPerson(camPos, camDist, cameraAngleIncrement*frameCounter, 0, 0)
+        cam:apply(0)
+        if frameCounter > myFPS then -- if finished a complete rotation of the camera, go on to the next step
+            frameCounter = 0
+            cameraLoopCounter = 2
         end
     else
-        if cameraLoopCounter == 3 then -- rotate the camera 30 degrees around the piece on the third axis
-            cam:apply(0)
-            if frameCounter == motPs then -- if finished a rotation of the camera, go back to the first step
+        if cameraLoopCounter == 2 then -- rotate the camera 90 degrees around the piece on the second axis
+            cam:setThirdPerson(camPos, camDist, 0, cameraAngleIncrement*frameCounter, 0)
+            if frameCounter == myFPS then -- Finished complete rotation of the camera, go on to the next step
                 frameCounter = 0
-                cameraLoopCounter = 4
+                cameraLoopCounter = 3
             end
         else
-            if cameraLoopCounter == 4 then --rotate the camera 360 degrees around the piece on two different axes
-                cam:setThirdPerson(camPos, camDist, cameraAngleIncrement*frameCounter, cameraAngleIncrement*frameCounter)
+            if cameraLoopCounter == 3 then -- rotate the camera 30 degrees around the piece on the third axis
+                cam:setThirdPerson(camPos, camDist, 0, 0, cameraAngleIncrement*frameCounter)
                 cam:apply(0)
-                if frameCounter == myFPS then -- it finished a rotation of the camera, go on to the next step
-                    frameCounter = 9
-                    cameraLoopCounter = 5
+                if frameCounter == myFPS then -- if finished a rotation of the camera, go back to the first step
+                    frameCounter = 0
+                    cameraLoopCounter = 4
                 end
             else
-                if cameraLoopCounter == 5 then -- rotate the camera 90 degrees around the piece on two different axes
-                    cam:setThirdPerson(camPos, camDist, cameraAngleIncrement*frameCounter, cameraAngleIncrement*frameCounter, cameraAngleIncrement*frameCounter)
+                if cameraLoopCounter == 4 then --rotate the camera 360 degrees around the piece on two different axes
+                    cam:setThirdPerson(camPos, camDist, cameraAngleIncrement*frameCounter, cameraAngleIncrement*frameCounter)
                     cam:apply(0)
-                    if frameCounter == myFPS then -- if finished a rotation of the camera, go on to the next step
+                    if frameCounter == myFPS then -- it finished a rotation of the camera, go on to the next step
                         frameCounter = 0
-                        cameraLoopCounter = 1
-                        if pieceCounter == refCnt then -- if there are no more pieces, go back to the beginning
-                            sf=getRef(pieceCounter):setPos(unviewPosition)
-                            pieceCounter = 1
-                            sf:getRef(pieceCounter):setPos(viewPosition)
-                            cam:setThirdPerson(camPos, camDist, 0, 0, 0)
-                            cam:apply(0)
-                        else -- otherwise switch to the next piece
-                            st:getRef(pieceCounter):setPos(unviewPosition)
-                            pieceCounter = pieceCounter + 1
-                            sf:getRef(pieceCounter):setPos(viewPosition)
-                            cam:setThirdPerson(camPos, camDist, 0, 0, 0)
-                            cam:apply(0)
+                        cameraLoopCounter = 5
+                    end
+                else
+                    if cameraLoopCounter == 5 then -- rotate the camera 90 degrees around the piece on two different axes
+                        cam:setThirdPerson(camPos, camDist, cameraAngleIncrement*frameCounter, cameraAngleIncrement*frameCounter, cameraAngleIncrement*frameCounter)
+                        cam:apply(0)
+                        if frameCounter == myFPS then -- if finished a rotation of the camera, go on to the next step
+                            frameCounter = 0
+                            cameraLoopCounter = 1
+                            if pieceCounter == refCnt then -- if there are no more pieces, go back to the beginning
+                                sf:getRef(pieceCounter):setPos(unviewPosition)
+                                pieceCounter = 1
+                                sf:getRef(pieceCounter):setPos(viewPosition)
+                                cam:setThirdPerson(camPos, camDist, 0, 0, 0)
+                                cam:apply(0)
+                            else -- otherwise switch to the next piece
+                                st:getRef(pieceCounter):setPos(unviewPosition)
+                                pieceCounter = pieceCounter + 1
+                                sf:getRef(pieceCounter):setPos(viewPosition)
+                                cam:setThirdPerson(camPos, camDist, 0, 0, 0)
+                                cam:apply(0)
+                            end
                         end
                     end
+                end
+            end
+        end
+    end
+end -- end function onParadeFrame()
